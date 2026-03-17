@@ -1,6 +1,12 @@
 # JJS Moveset Decoder
 
-Reverse-engineer encoded moveset codes from Jujutsu Shenanigans into readable JSON, extracted files, or re-encoded strings.
+This tool is developed to enable users to read and interpret exported code from JJS Shenanigans (Roblox). Its primary purpose is to provide insight into the structure and encoding format of moveset data, allowing users to better understand how such data is represented and utilized within the system.
+
+The encoding methodology implemented in this tool is inspired by the approach introduced by @echo0v, particularly in terms of how raw JSON data is transformed into an encoded format suitable for use within the application.
+
+As part of the workflow, a sample file (test.txt) is generated to demonstrate the encoding process. This file is produced by first submitting a structured JSON input to ChatGPT, which returns a formatted JSON response that adheres to the required schema. The resulting JSON is then processed and encoded by this tool into the final export format compatible with JJS Shenanigans.
+
+Overall, this tool serves both as a utility for decoding and analyzing exported moveset data, and as a reference system for users seeking inspiration or guidance in designing and encoding their own custom movesets.
 
 ---
 
