@@ -469,7 +469,7 @@ COMPRESSORS: dict = {
 
 def encode_to_string(
     input_text: str,
-    algorithm: str = "zlib",
+    algorithm: str = "zstd",
     progress_cb=None,
     original_encoded: Optional[str] = None,
     original_raw_json: Optional[str] = None,
@@ -556,7 +556,7 @@ def encode_to_string(
 
 def encode_file_to_string(
     file_path: str,
-    algorithm: str = "zlib",
+    algorithm: str = "zstd",
     progress_cb=None,
 ) -> "EncodeResult":
     """Read a JSON/text file and encode it to a moveset code string."""
