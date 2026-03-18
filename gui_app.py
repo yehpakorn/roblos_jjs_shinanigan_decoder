@@ -215,7 +215,7 @@ class DecoderApp(ctk.CTk):
         ctk.CTkLabel(
             enc_row, text="Algorithm", font=FONT_LABEL, text_color=C["text2"]
         ).pack(side="left")
-        self._algo_var = tk.StringVar(value="zlib")
+        self._algo_var = tk.StringVar(value="zstd")
         ctk.CTkOptionMenu(
             enc_row, variable=self._algo_var, values=COMPRESSION_ALGORITHMS,
             font=FONT_MONO_SM, width=90, height=32,
