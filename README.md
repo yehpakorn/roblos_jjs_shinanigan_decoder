@@ -8,6 +8,8 @@ As part of the workflow, a sample file (test.txt) is generated to demonstrate th
 
 Overall, this tool serves both as a utility for decoding and analyzing exported moveset data, and as a reference system for users seeking inspiration or guidance in designing and encoding their own custom movesets.
 
+YOU CAN USE THE WEB VERSION IN https://jjsshinanigancodedecoder.netlify.app/ for free
+
 ---
 
 ## 1. Environment Setup
