@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JJS Moveset Decoder / Encoder</title>
+    <link rel="stylesheet" href="index.css">
+    
+    <!-- External Compression Libraries (CDN) -->
+    <!-- pako: gzip/zlib/zlib-raw -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+    <!-- zstd-codec: zstandard compression and decompression (bundled locally) -->
+    <script src="zstd-bundle.js"></script>
+    <!-- lzma-js: lzma/xz -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lzma/2.3.2/lzma_worker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lzma/2.3.2/lzma.min.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="hdr">
+        <h1 class="hdr-title">JJS MOVESET DECODER / ENCODER</h1>
+        <div class="hdr-badge">v1.1.0</div>
+        <div class="hdr-subtitle">zstd | gzip | zlib | lzma | auto-detect pipeline</div>
+    </header>
+
+    <!-- Main Application Body -->
+    <main class="body-container">
+        
+        <!-- Left Pane (Fixed Width Input & Controls) -->
+        <aside class="left-pane">
+            
+            <!-- INPUT SECTION -->
+            <section class="card">
+                <div class="section-hdr">
+                    <h2 class="section-title primary-color">INPUT</h2>
+                    <div class="section-actions">
+                        <input type="file" id="fileInput" style="display:none;" />
+                        <button class="btn btn-sm btn-outline" id="loadBtn">Load File</button>
+                        <button class="btn btn-sm btn-outline" id="clearInputBtn">Clear</button>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <textarea id="rawInput" class="input-box" placeholder="Paste encoded moveset code, JSON, or plain text." spellcheck="false"></textarea>
+                    <p class="help-text">Paste encoded moveset code, JSON, or plain text.</p>
+                </div>
+            </section>
+
+            <!-- CONTROLS SECTION -->
+            <section class="card">
+                <div class="card-content controls-content">
+                    <button class="btn btn-lg btn-primary" id="decodeBtn">DECODE</button>
+                    
+                    <div class="sep"></div>
+                    
+                    <div class="row align-center">
+                        <label class="label-text">Algorithm</label>
+                        <select id="algoSelect" class="dropdown">
+                            <!-- Populated dynamically from decoder_core.js -->
+                        </select>
+                        <button class="btn btn-md btn-danger flex-grow" id="encodeBtn">ENCODE</button>
+                    </div>
+
+                    <div class="sep"></div>
+
+                    <!-- EXPORT ROW -->
+                    <div class="row gap-4">
+                        <button class="btn btn-sm btn-outline flex-grow" id="saveJsonBtn" disabled>Save JSON</button>
+                        <button class="btn btn-sm btn-outline flex-grow" id="saveBinBtn" disabled>Save Binary</button>
+                        <button class="btn btn-sm btn-outline flex-grow" id="extractBtn" disabled title="Not entirely supported in browser yet">Extract</button>
+                    </div>
+
+                    <!-- CLIPBOARD ROW -->
+                    <div class="row gap-4 mt-8">
+                        <button class="btn btn-sm btn-outline flex-grow" id="copyDecBtn" disabled>Copy Decoded</button>
+                        <button class="btn btn-sm btn-outline flex-grow" id="copyEncBtn" disabled>Copy Encoded</button>
+                    </div>
+
+                    <!-- SAVE ENCODED -->
+                    <button class="btn btn-sm btn-outline full-width mt-8" id="saveEncBtn" disabled>Save Encoded .txt</button>
+
+                    <!-- PROGRESS BAR -->
+                    <div class="progress-bar-container mt-12">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PIPELINE LOG -->
+            <section class="card flex-grow-1 flex-col">
+                <div class="section-hdr">
+                    <h2 class="section-title danger-color">PIPELINE LOG</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-xs btn-outline" id="clearLogBtn">Clear</button>
+                    </div>
+                </div>
+                <div class="card-content log-content flex-grow-1">
+                    <textarea id="logBox" class="log-box" readonly spellcheck="false"></textarea>
+                </div>
+            </section>
+
+        </aside>
+
+        <!-- Right Pane (Expandable Output) -->
+        <section class="right-pane">
+            
+            <!-- DECODED OUTPUT -->
+            <div class="card flex-grow-1 flex-col">
+                <div class="section-hdr">
+                    <div class="row align-center justify-start flex-grow">
+                        <h2 class="section-title success-color">DECODED OUTPUT</h2>
+                        <span id="decTypeLbl" class="status-lbl success-color ml-12"></span>
+                    </div>
+                </div>
+                
+                <div class="tabs-container">
+                    <div class="tabs-header">
+                        <button class="tab-btn active" data-target="jsonTab">JSON / Text</button>
+                        <button class="tab-btn" data-target="hexTab">Hex View</button>
+                        <button class="tab-btn" data-target="summaryTab">Summary</button>
+                    </div>
+                    <div class="tabs-content">
+                        <textarea id="jsonTab" class="tab-pane active output-box" readonly spellcheck="false"></textarea>
+                        <textarea id="hexTab" class="tab-pane hex-box" readonly spellcheck="false"></textarea>
+                        <textarea id="summaryTab" class="tab-pane output-box" readonly spellcheck="false"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ENCODED OUTPUT -->
+            <div class="card mt-12">
+                <div class="section-hdr">
+                    <div class="row align-center justify-start flex-grow">
+                        <h2 class="section-title danger-color">ENCODED OUTPUT</h2>
+                        <span id="encStatsLbl" class="status-lbl dim-color ml-12"></span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <textarea id="encOut" class="output-box enc-box" readonly spellcheck="false"></textarea>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Status Bar -->
+    <footer class="status-bar">
+        <span id="statusVar">Ready</span>
+    </footer>
+
+    <!-- Core Logic and App Controller -->
+    <script src="decoder_core.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

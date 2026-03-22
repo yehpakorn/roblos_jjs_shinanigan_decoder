@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html><head><script src="zstd-bundle.js"></script></head><body>
+<script>
+window.ZstdCodec.run(zstd => {
+  const simple = new zstd.Simple();
+  const data = new TextEncoder().encode('Hello zstd compression!');
+  const compressed = simple.compress(data);
+  const decompressed = simple.decompress(compressed);
+  const result = new TextDecoder().decode(decompressed);
+  document.body.innerHTML = '<h1>' + result + '</h1>';
+});
+</script>
+</body></html>
